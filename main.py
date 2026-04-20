@@ -1,3 +1,6 @@
-#from pydantic import BaseSettings
-#import os
+from config import JellyfinSettings
 
+
+
+def main():
+    pass
