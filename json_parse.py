@@ -4,6 +4,30 @@ from pydantic import BaseModel, Json, ValidationError
 import json
 
 
+def get_duration(ticks):
+    time_seconds = int(ticks / 10_000_000)
+    if time_seconds < 60:
+        seconds = time_seconds
+        return {
+            "seconds" : seconds
+        }
+    elif time_seconds > 60 and time_seconds < 60*60:
+        minutes = time_seconds // 60
+        seconds = time_seconds % 60
+        return {
+            "seconds" : seconds,
+            "minutes" : minutes
+        }        
+    else:
+        hours = time_seconds // 60**2
+        minutes = (time_seconds - hours*60**2) // 60
+        seconds = (time_seconds - hours*60**2) // 60
+        return {
+            "seconds" : seconds,
+            "minutes" : minutes,
+            "hours" : hours
+        }        
+
 
 class JellyfinApi(JellyfinSettings):
     def __init__(self, settings: JellyfinSettings) -> None:
@@ -12,67 +36,72 @@ class JellyfinApi(JellyfinSettings):
         self.__username = settings.username
         self.__raw_json = None
     
-    def get_session_json(self) ->  None:
+    def get_session_json(self) ->  list[dict[str,dict]]:
         url = f"{self.__url}/Sessions"
         headers = {
             "Authorization": f"MediaBrowser Token={self.__api_key}",
             "X-Emby-Token": f"MediaBrowser Token={self.__api_key}"
             }
         request = requests.get(url, headers=headers)
-        print(request.status_code)
-        #print(request.json())
-        self.__raw_json = request.json()
+        #print(request.status_code)
+        return request.json()
 
+    def parse_session_json(self) -> dict[str,object] | str:   
+        self.__raw_json = self.get_session_json()
         with open("sessions.json", "w") as f:
             json.dump(self.__raw_json, f, indent=2)
+        if not self.__raw_json:
+            return {"error" : "Cannot connect to jellyfin server"}
+        with open("sessions.json", "w") as f:
+            json.dump(self.__raw_json, f, indent=2)
+        session = self.__raw_json[0]
 
-        #Music
-        # print(self.__raw_json[0]["NowPlayingItem"]["Type"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["Path"])
-        # print(self.__raw_json[0]["PlayState"]["PositionTicks"])
-        # print(self.__raw_json[0]["UserName"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["Name"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["ProductionYear"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["RunTimeTicks"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["Album"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["AlbumId"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["AlbumPrimaryImageTag"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["AlbumArtist"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["Path"])
-        # image_url = f"{self.__url}/Items/{self.__raw_json[0]["NowPlayingItem"]["AlbumId"]}/Images/Primary?tag={self.__raw_json[0]["NowPlayingItem"]["AlbumPrimaryImageTag"]}"
-        # print(image_url)
+        now_playing = session.get("NowPlayingItem")
+        if not now_playing:
+            return {"error" : "Nothing is playing"}
+        
+        data = {
+            "username": session.get("UserName"),
+            "duration": get_duration(now_playing.get("RunTimeTicks")),
+            "time_passed": get_duration(session.get("PlayState", {}).get("PositionTicks")),
+            "type": now_playing.get("Type"),
+            #Path is here for debugging
+            #"path": now_playing.get("Path"),
+            "name": now_playing.get("Name"),
+            "year": now_playing.get("ProductionYear")
+        }   
+        
+        if now_playing.get("Type") == "Audio":
+            data.update({
+                "album": now_playing.get("Album"),
+                "album_id": session.get("PlayState", {}).get("MediaSourceId"),
+                "image_tag": now_playing.get("AlbumPrimaryImageTag"),
+                "album_artist": now_playing.get("AlbumArtist"),
+            })
+            data.update({
+                "image_url":  f"{self.__url}/Items/{data["album_id"]}/Images/Primary?tag={data['image_tag']}"
+            })
+        elif now_playing.get("Type") == "Movie":
+            data.update({
+                "movie_id": session.get("PlayState", {}).get("MediaSourceId"),
+                "image_tag": now_playing.get("ImageTags")
+            })
+            data.update({
+                "image_url":  f"{self.__url}/Items/{data["movie_id"]}/Images/Primary?tag={data['image_tag']}"
+            })
+        elif now_playing.get("Type") == "Episode":
+            data.update({
+                "image_tag": now_playing.get("ParentLogoImageTag"),
+                "season_number": now_playing.get("ParentIndexNumber"),
+                "episode_number": now_playing.get("IndexNumber"),
+                "season_id": now_playing.get("SeasonId"),                
+                "season_name": now_playing.get("SeasonName")
+            })
+            data.update({
+                "image_url":  f"{self.__url}/Items/{data["season_id"]}/Images/Primary?tag={data['image_tag']}"
+            })            
 
-        #Movie
-        # print(self.__raw_json[0]["NowPlayingItem"]["Type"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["Path"])
-        # print(self.__raw_json[0]["PlayState"]["PositionTicks"])
-        # print(self.__raw_json[0]["UserName"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["Name"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["ProductionYear"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["RunTimeTicks"])
-        # print(self.__raw_json[0]["NowPlayingItem"]["ImageTags"])
-        # print(self.__raw_json[0]["NowPlayingQueue"][0]["Id"])
-        # image_url = f"{self.__url}/Items/{self.__raw_json[0]["NowPlayingQueue"][0]["Id"]}/Images/Primary?tag={self.__raw_json[0]["NowPlayingItem"]["ImageTags"]["Primary"]}"
-        # print(image_url)
-
-        #Episode
-        print(self.__raw_json[0]["NowPlayingItem"]["Type"])
-        print(self.__raw_json[0]["NowPlayingItem"]["Path"])
-        print(self.__raw_json[0]["PlayState"]["PositionTicks"])
-        print(self.__raw_json[0]["UserName"])
-        print(self.__raw_json[0]["NowPlayingItem"]["Name"])
-        print(self.__raw_json[0]["NowPlayingItem"]["ProductionYear"])
-        print(self.__raw_json[0]["NowPlayingItem"]["RunTimeTicks"])
-        print(self.__raw_json[0]["NowPlayingItem"]["ParentLogoImageTag"])
-        print(self.__raw_json[0]["NowPlayingItem"]["SeasonId"])
-        print(self.__raw_json[0]["NowPlayingItem"]["SeriesId"])
-        print(self.__raw_json[0]["NowPlayingItem"]["SeasonName"])
-        image_url = f"{self.__url}/Items/{self.__raw_json[0]["NowPlayingItem"]["SeasonId"]}/Images/Primary?tag={self.__raw_json[0]["NowPlayingItem"]["ImageTags"]["Primary"]}"
-        print(image_url)
-
-    def parse_session_json(self) -> None:
-        pass
-
-
-settings = JellyfinSettings() # type: ignore
-JellyfinApi(settings).get_session_json()
+        return data
+settings = JellyfinSettings() # type: ignore[reportCallIssue]
+test = JellyfinApi(settings).parse_session_json()
+print(test)
