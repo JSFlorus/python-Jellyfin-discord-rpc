@@ -1,0 +1,14 @@
+services:
+  jellyfin-rpc:
+    build: .
+    container_name: jellyfin-rpc
+    env_file:
+      - .env
+    network_mode: host
+    environment:
+      XDG_RUNTIME_DIR: /run/user/1000
+    volumes:
+      - /run/user/1000:/run/user/1000
+    dns:
+      - 10.10.10.1   # your internal DNS (OPNsense, etc.)      
+    restart: unless-stopped

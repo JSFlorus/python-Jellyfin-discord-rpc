@@ -1,28 +1,13 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/python
 {
 	"name": "Python 3",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/python:3-3.14-trixie",
-
-	// Features to add to the dev container. More info: https://containers.dev/features.
-	// "features": {},
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": ".."
+	},
 	"mounts": [
-		"source=/run/user/1000/app/com.discordapp.Discord/discord-ipc-0,target=/tmp/discord-ipc-0,type=bind"
+	"source=/run/user/1000,target=/run/user/1000,type=bind"
 	],
 	"containerEnv": {
-		"XDG_RUNTIME_DIR": "/tmp"
-	},
-	"postCreateCommand": "pip3 install --user -r requirements.txt"
-
-	// Configure tool-specific properties.
-	// "customizations": {},
-
-	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
-	// "remoteUser": "root"
+	"XDG_RUNTIME_DIR": "/run/user/1000"
+	}
 }
