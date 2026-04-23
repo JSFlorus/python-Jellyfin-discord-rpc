@@ -14,17 +14,9 @@ class JellyfinRPC:
         self.data = {}
         self.last_name = None
         self.intiial_time = 0
-        self.counter = 0
-    def is_new(self, data: dict) -> bool:
-        name = data.get("name")
-
-        if name == self.last_name:
-            return False
-
-        self.last_name = name
-        return True        
+ 
     def time_passed(self) -> tuple[int, int]:
-        now = self.intiial_time
+        now = self.intiial_time 
         start = now - int(self.data.get("time_passed", 0))
         end = start + int(self.data.get("duration", 0))
         return start, end
@@ -78,25 +70,15 @@ class JellyfinRPC:
 
     def update_presence(self) -> str | None:
         self.data = self.refresh_data()
-        check = self.is_new(self.data)
         if "error" in self.data:
             self.rpc.clear()
             print(f"Jellyfin error: {self.data.get("error")}")
             return None
  
         print(f"Media: {self.data}")
-        if check is True:
-            self.intiial_time = init_time()
-            self.find_type()
-            self.counter = 0
-        if check is False:
-            self.find_type()
-            self.counter += 1
-            if self.counter == 20:
-                print(self.counter)
-                self.rpc.close()
-                time.sleep(2)
-                self.rpc.connect()
+        self.intiial_time = init_time()
+        self.find_type()
+
 
        
                
