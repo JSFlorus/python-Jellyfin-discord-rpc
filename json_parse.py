@@ -27,14 +27,19 @@ def get_duration(ticks):
             "minutes" : minutes,
             "hours" : hours
         }        
+def get_duration_seconds(ticks):
+    time_seconds = int(ticks / 10_000_000)
+    return time_seconds
 
 
-class JellyfinApi(JellyfinSettings):
-    def __init__(self, settings: JellyfinSettings) -> None:
+class JellyfinApi:
+    def __init__(self) -> None:
+        settings = JellyfinSettings() # type: ignore[reportCallIssue]
         self.__api_key = settings.api_key.get_secret_value()
         self.__url = settings.url
         self.__username = settings.username
         self.__raw_json = None
+        self.__client_id = settings.client_id
     
     def get_session_json(self) ->  list[dict[str,dict]]:
         url = f"{self.__url}/Sessions"
@@ -45,25 +50,31 @@ class JellyfinApi(JellyfinSettings):
         request = requests.get(url, headers=headers)
         #print(request.status_code)
         return request.json()
-
-    def parse_session_json(self) -> dict[str,object] | str:   
+    def init_json(self) -> None | str:
         self.__raw_json = self.get_session_json()
-        with open("sessions.json", "w") as f:
-            json.dump(self.__raw_json, f, indent=2)
+
+
+    def parse_session_json(self) -> dict[str,str]:   
+        self.init_json()
         if not self.__raw_json:
             return {"error" : "Cannot connect to jellyfin server"}
-        with open("sessions.json", "w") as f:
-            json.dump(self.__raw_json, f, indent=2)
-        session = self.__raw_json[0]
-
-        now_playing = session.get("NowPlayingItem")
+            
+        session = {}
+        now_playing = {}
+        for i in range(len(self.__raw_json)):
+            if self.__raw_json[i].get("UserName") == self.__username and "NowPlayingItem" in self.__raw_json[i]:
+                user_session_index = i
+                session = self.__raw_json[user_session_index]
+                now_playing = session.get("NowPlayingItem")
+                break
+        if not session:
+            return {"error" : "Cannot find your jellyfin user session"}
         if not now_playing:
             return {"error" : "Nothing is playing"}
-        
         data = {
             "username": session.get("UserName"),
-            "duration": get_duration(now_playing.get("RunTimeTicks")),
-            "time_passed": get_duration(session.get("PlayState", {}).get("PositionTicks")),
+            "duration": get_duration_seconds(now_playing.get("RunTimeTicks")),
+            "time_passed": get_duration_seconds(session.get("PlayState", {}).get("PositionTicks")),
             "type": now_playing.get("Type"),
             #Path is here for debugging
             #"path": now_playing.get("Path"),
@@ -99,9 +110,10 @@ class JellyfinApi(JellyfinSettings):
             })
             data.update({
                 "image_url":  f"{self.__url}/Items/{data["season_id"]}/Images/Primary?tag={data['image_tag']}"
-            })            
+            }) 
+            if int(data["season_number"]) <= 9:
+                data["season_number"]= f"0{now_playing.get("ParentIndexNumber")}"
+            if int(data["episode_number"]) <= 9:
+                    data["season_number"]= f"0{now_playing.get("ParentIndexNumber")}"                
 
         return data
-settings = JellyfinSettings() # type: ignore[reportCallIssue]
-test = JellyfinApi(settings).parse_session_json()
-print(test)

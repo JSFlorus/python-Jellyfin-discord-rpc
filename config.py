@@ -14,8 +14,8 @@ class JellyfinSettings(BaseSettings):
 
 
  
-settings = JellyfinSettings() # type: ignore[reportCallIssue]
-#print(settings.model_dump())
+# settings = JellyfinSettings() # type: ignore[reportCallIssue]
+# #print(settings.model_dump())
 
 
-# real_key = settings.api_key.get_secret_value()
+# # real_key = settings.api_key.get_secret_value()

@@ -12,7 +12,13 @@
 	// "forwardPorts": [],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
-	"postCreateCommand": "pip3 install --user -r requirements.txt",
+	"mounts": [
+		"source=/run/user/1000/app/com.discordapp.Discord/discord-ipc-0,target=/tmp/discord-ipc-0,type=bind"
+	],
+	"containerEnv": {
+		"XDG_RUNTIME_DIR": "/tmp"
+	},
+	"postCreateCommand": "pip3 install --user -r requirements.txt"
 
 	// Configure tool-specific properties.
 	// "customizations": {},
