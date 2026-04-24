@@ -2,23 +2,75 @@
 
 Displays your Jellyfin playback status on Discord Rich Presence.
 
+---
+
 ## ✨ Features
 
-* Shows currently playing media from Jellyfin
-* Updates Discord Rich Presence in real time
-* Lightweight and Docker-friendly
-* Works with reverse proxy setups
+- Shows currently playing media from Jellyfin  
+- Updates Discord Rich Presence in real time  
+- Lightweight and Docker-friendly  
+- Works with reverse proxy setups  
 
 ---
 
 ## 📦 Requirements
 
-* Jellyfin server
-* Discord (must be running on the host)
-* Docker (recommended)
+- Jellyfin server  
+- Discord (must be running on the host)  
+- Docker (recommended)  
 
 ---
 
+## 🎮 Discord Setup (Client ID + Assets)
+
+Before running the app, you need to create a Discord application and configure assets.
+
+### 1. Create a Discord Application
+
+1. Go to https://discord.com/developers/applications  
+2. Click **New Application**  
+3. Give it a name (e.g., `Jellyfin RPC`)  
+4. Click **Create**
+
+---
+
+### 2. Get Your Client ID
+
+1. Inside your application dashboard  
+2. Go to **General Information**  
+3. Copy the **Application ID**
+
+➡️ This is your `DISCORD_CLIENT_ID`
+
+---
+
+### 3. Add Rich Presence Image Asset
+
+1. Go to **Rich Presence → Art Assets**  
+2. Click **Add Image(s)**  
+3. Upload an image (e.g., Jellyfin logo)  
+4. Set the **Asset Name** (IMPORTANT)
+
+Example:
+
+
+Asset Name: server
+
+
+➡️ This must match:
+
+
+ART_ASSET=server
+
+
+---
+
+### 4. Notes
+
+- Rich Presence is enabled by default  
+- No OAuth setup is required  
+
+---
 ## 🚀 Quick Start (Docker)
 
 ```bash
@@ -54,18 +106,9 @@ services:
       XDG_RUNTIME_DIR: /run/user/1000
 
     volumes:
-      # Recommended (works reliably with Flatpak Discord)
       - /run/user/1000/.flatpak/com.discordapp.Discord/xdg-run:/run/user/1000
 
-      # Alternative (less reliable, socket index can change)
-      # - /run/user/1000/.flatpak/com.discordapp.Discord/xdg-run/discord-ipc-0:/run/user/1000/discord-ipc-0
-
     network_mode: host
-
-    # Optional DNS override
-    # dns:
-    #   - YourDnsServer
-
     user: "1000:1000"
 ```
 
@@ -73,14 +116,14 @@ services:
 
 ## ⚙️ Environment Variables
 
-| Variable                       | Description                                                             |
-| ------------------------------ | ----------------------------------------------------------------------- |
-| `DISCORD_CLIENT_ID`            | Discord application client ID used for Rich Presence                    |
-| `JELLYFIN_URL`                 | URL of your Jellyfin server                                             |
-| `JELLYFIN_API_KEY`             | Jellyfin API key                                                        |
-| `JELLYFIN_USER`                | Username to track                                                       |
-| `ART_ASSET`                    | Discord Rich Presence image asset name (must exist in your Discord app) |
-| `DISCORD_UPDATE_INTERVAL_SECS` | Interval (in seconds) between updates                                   |
+| Variable | Description |
+|----------|------------|
+| DISCORD_CLIENT_ID | Discord application client ID |
+| JELLYFIN_URL | URL of your Jellyfin server |
+| JELLYFIN_API_KEY | Jellyfin API key |
+| JELLYFIN_USER | Username to track |
+| ART_ASSET | Discord Rich Presence image asset name |
+| DISCORD_UPDATE_INTERVAL_SECS | Update interval in seconds |
 
 ---
 
@@ -94,8 +137,6 @@ JELLYFIN_USER=JohnDoe
 ART_ASSET=server
 DISCORD_UPDATE_INTERVAL_SECS=10
 ```
-
----
 
 ## 🧠 How it works
 
@@ -114,7 +155,7 @@ volumes:
 
 Otherwise you will get:
 
-```
+```text
 Discord RPC unavailable: Could not find Discord installed and running
 ```
 
@@ -133,7 +174,7 @@ ls /run/user/1000/.flatpak/com.discordapp.Discord/xdg-run
 
 You should see:
 
-```
+```text
 discord-ipc-0
 ```
 
