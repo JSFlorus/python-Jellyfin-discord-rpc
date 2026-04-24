@@ -51,8 +51,9 @@ class JellyfinRPC:
         return start, end
     def refresh_data(self) -> dict[str, str]:
         self.data = {}
-        data = JellyfinApi().parse_session_json()
-        return data
+        data = JellyfinApi()
+        data.init_json()
+        return data.parse_session_json()
     def audio_rpc(self) -> None:
         self.safe_rpc_update(
             activity_type=ActivityType.LISTENING,  

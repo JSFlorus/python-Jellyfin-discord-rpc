@@ -39,7 +39,6 @@ class JellyfinApi:
         self.__url = settings.url
         self.__username = settings.username
         self.__raw_json = None
-        self.__client_id = settings.client_id
     
     def get_session_json(self) ->  list[dict[str,dict]]:
         url = f"{self.__url}/Sessions"
@@ -50,19 +49,18 @@ class JellyfinApi:
         request = requests.get(url, headers=headers)
         #print(request.status_code)
         return request.json()
-    def init_json(self) -> None | str:
+    def init_json(self) -> None:
         self.__raw_json = self.get_session_json()
 
 
     def parse_session_json(self) -> dict[str,str]:   
-        self.init_json()
         if not self.__raw_json:
             return {"error" : "Cannot connect to jellyfin server"}
             
         session = {}
         now_playing = {}
         for i in range(len(self.__raw_json)):
-            if self.__raw_json[i].get("UserName") == self.__username and "NowPlayingItem" in self.__raw_json[i]:
+            if self.__raw_json[i].get("UserName") == self.__username:
                 user_session_index = i
                 session = self.__raw_json[user_session_index]
                 now_playing = session.get("NowPlayingItem")
@@ -114,6 +112,8 @@ class JellyfinApi:
             if int(data["season_number"]) <= 9:
                 data["season_number"]= f"0{now_playing.get("ParentIndexNumber")}"
             if int(data["episode_number"]) <= 9:
-                    data["season_number"]= f"0{now_playing.get("ParentIndexNumber")}"                
+                data["episode_number"]= f"0{now_playing.get("IndexNumber")}"                
 
         return data
+    def set_raw_json(self, raw_json: list[dict]) -> None:
+        self.__raw_json = raw_json    
