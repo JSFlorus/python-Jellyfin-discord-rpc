@@ -1,7 +1,8 @@
 # Jellyfin Discord RPC
-
-[![CI/CD](https://github.com/jsflorus/python-jellyfin-discord-rpc/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/jsflorus/python-jellyfin-discord-rpc/actions)
-
+ 
+[![CI](https://img.shields.io/github/actions/workflow/status/jsflorus/python-jellyfin-discord-rpc/ci-cd.yml?style=for-the-badge&label=CI&logo=github)](https://github.com/jsflorus/python-jellyfin-discord-rpc/actions)
+[![GHCR](https://img.shields.io/badge/registry-ghcr.io-2ea44f?style=for-the-badge&logo=docker)](https://ghcr.io/jsflorus/python-jellyfin-discord-rpc)
+[![Release](https://img.shields.io/github/v/release/jsflorus/python-jellyfin-discord-rpc?style=for-the-badge&label=release)](https://github.com/jsflorus/python-jellyfin-discord-rpc/releases)
 ---
 
 Displays your Jellyfin playback status on Discord Rich Presence.
@@ -25,6 +26,7 @@ Displays your Jellyfin playback status on Discord Rich Presence.
 
 ---
 
+---
 ## 🎮 Discord Setup (Client ID + Assets)
 
 Before running the app, you need to create a Discord application and configure assets.
