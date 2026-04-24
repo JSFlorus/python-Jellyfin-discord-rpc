@@ -2,4 +2,3 @@ pydantic
 pydantic-settings
 requests
 pypresence
-pytest
