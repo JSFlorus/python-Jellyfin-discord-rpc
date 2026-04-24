@@ -9,8 +9,8 @@ class JellyfinSettings(BaseSettings):
     url: str = Field(alias="JELLYFIN_URL")
     api_key: SecretStr = Field(alias="JELLYFIN_API_KEY")
     username: str = Field(alias="JELLYFIN_USER")
-    client_id: str = Field(alias="ART_ASSET")
-    image_asset: str = Field(alias="DISCORD_CLIENT_ID")
+    client_id: str = Field(alias="DISCORD_CLIENT_ID")
+    image_asset: str = Field(alias="ART_ASSET")
     poll_rate: int = Field(alias="DISCORD_UPDATE_INTERVAL_SECS")
 
  
