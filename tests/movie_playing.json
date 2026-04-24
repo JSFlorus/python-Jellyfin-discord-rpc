@@ -1,0 +1,18 @@
+[
+  {
+    "PlayState": {
+      "PositionTicks": 80127050,
+      "MediaSourceId": "fake-movie-id"
+    },
+    "UserName": "test_user",
+    "NowPlayingItem": {
+      "Name": "Test Movie",
+      "RunTimeTicks": 53687389999,
+      "ProductionYear": 2024,
+      "Type": "Movie",
+      "ImageTags": {
+        "Primary": "fake-primary-image-tag"
+      }
+    }
+  }
+]

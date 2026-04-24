@@ -1,0 +1,20 @@
+[
+  {
+    "PlayState": {
+      "PositionTicks": 186612819,
+      "MediaSourceId": "fake-episode-id"
+    },
+    "UserName": "test_user",
+    "NowPlayingItem": {
+      "Name": "Test Episode",
+      "RunTimeTicks": 13221980000,
+      "ProductionYear": 2020,
+      "Type": "Episode",
+      "IndexNumber": 10,
+      "ParentIndexNumber": 12,
+      "SeasonId": "fake-season-id",
+      "SeasonName": "Season 12",
+      "ParentLogoImageTag": "fake-logo-tag"
+    }
+  }
+]

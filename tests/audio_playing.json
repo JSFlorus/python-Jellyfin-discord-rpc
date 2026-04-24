@@ -1,0 +1,20 @@
+[
+  {
+    "PlayState": {
+      "PositionTicks": 700000000,
+      "MediaSourceId": "fake-media-id"
+    },
+    "UserName": "test_user",
+    "RemoteEndPoint": "192.168.0.100",
+    "NowPlayingItem": {
+      "Name": "Test Song",
+      "Id": "fake-item-id",
+      "RunTimeTicks": 1571334350,
+      "ProductionYear": 2020,
+      "Type": "Audio",
+      "Album": "Test Album",
+      "AlbumPrimaryImageTag": "fake-image-tag",
+      "AlbumArtist": "Test Artist"
+    }
+  }
+]
