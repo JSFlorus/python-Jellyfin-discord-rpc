@@ -64,7 +64,7 @@ services:
 
     # Optional DNS override
     # dns:
-    #   - 10.10.10.1
+    #   - YourDnsServer
 
     user: "1000:1000"
 ```
