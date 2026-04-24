@@ -1,11 +1,18 @@
 import json
-
 from json_parse import JellyfinApi
+
+def setup_env(monkeypatch):
+    monkeypatch.setenv("JELLYFIN_URL", "http://fake")
+    monkeypatch.setenv("JELLYFIN_API_KEY", "fakekey")
+    monkeypatch.setenv("DISCORD_CLIENT_ID", "123")
+    monkeypatch.setenv("ART_ASSET", "server")
+    monkeypatch.setenv("DISCORD_UPDATE_INTERVAL_SECS", "10")
+    monkeypatch.setenv("JELLYFIN_USER", "test_user")
+
 def test_parse_playig_audio_session(monkeypatch):
     # Set env vars for test
 
-    monkeypatch.setenv("JELLYFIN_USER", "test_user")
-
+    setup_env(monkeypatch)
     api = JellyfinApi()
 
     with open("tests/audio_playing.json") as f:
@@ -22,7 +29,7 @@ def test_parse_playig_audio_session(monkeypatch):
     assert result["album_artist"] == "Test Artist"
 
 def test_parse_playig_movie_session(monkeypatch):
-    monkeypatch.setenv("JELLYFIN_USER", "test_user")
+    setup_env(monkeypatch)
 
     api = JellyfinApi()
 
@@ -40,11 +47,9 @@ def test_parse_playig_movie_session(monkeypatch):
     assert result["movie_id"] == "fake-movie-id"
 
 def test_parse_playing_show_session(monkeypatch):
-    import json
-    from json_parse import JellyfinApi
 
-    monkeypatch.setenv("JELLYFIN_USER", "test_user")
 
+    setup_env(monkeypatch)
     api = JellyfinApi()
 
     with open("tests/show_playing.json") as f:
@@ -62,11 +67,9 @@ def test_parse_playing_show_session(monkeypatch):
     assert result["episode_number"] == "01"
 
 def test_parse_playing_show2_session(monkeypatch):
-    import json
-    from json_parse import JellyfinApi
 
-    monkeypatch.setenv("JELLYFIN_USER", "test_user")
 
+    setup_env(monkeypatch)
     api = JellyfinApi()
 
     with open("tests/show2_playing.json") as f:
@@ -85,11 +88,9 @@ def test_parse_playing_show2_session(monkeypatch):
 
 
 def test_parse_nothing_playing_session(monkeypatch):
-    import json
-    from json_parse import JellyfinApi
 
-    monkeypatch.setenv("JELLYFIN_USER", "test_user")
 
+    setup_env(monkeypatch)
     api = JellyfinApi()
 
     with open("tests/not_playing.json") as f:
