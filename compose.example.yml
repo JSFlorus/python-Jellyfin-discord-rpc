@@ -10,5 +10,5 @@ services:
     volumes:
       - /run/user/1000:/run/user/1000
     dns:
-      - 10.10.10.1   # your internal DNS (OPNsense, etc.)      
+      - 10.10.10.10   # your internal DNS (OPNsense, etc.)      
     restart: unless-stopped
