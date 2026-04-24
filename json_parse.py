@@ -1,7 +1,5 @@
 from config import JellyfinSettings
 import requests
-from pydantic import BaseModel, Json, ValidationError
-import json
 
 
 def get_duration(ticks):

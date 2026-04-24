@@ -1,6 +1,5 @@
 from rpc import JellyfinRPC
 import time
-from pypresence.presence import Presence
 from config import JellyfinSettings
 
 settings = JellyfinSettings() # type: ignore[reportCallIssue]
