@@ -9,6 +9,7 @@ def init_time():
 class JellyfinRPC:
     def __init__(self) -> None:
         self.settings = JellyfinSettings()  # type: ignore[reportCallIssue]
+        self.image = self.settings.image_asset
         self.rpc = Presence(self.settings.client_id)
         self.data = {}
         self.last_name = None
@@ -59,7 +60,7 @@ class JellyfinRPC:
             large_text=f"{self.data.get("year")}",
             state=f"{self.data.get("album_artist", None)}",
             details= f"{self.data.get("name", "Unknown media")}",
-            large_image="server",
+            large_image=self.image,
             start=self.time_passed()[0],
             end=self.time_passed()[1],
         )
@@ -69,7 +70,7 @@ class JellyfinRPC:
             status_display_type=StatusDisplayType.DETAILS,   
             large_text=f"{self.data.get("year")}",
             details= f"{self.data.get("name", "Unknown media")}",
-            large_image="server",
+            large_image=self.image,
             start=self.time_passed()[0],
             end=self.time_passed()[1],
         )
@@ -80,7 +81,7 @@ class JellyfinRPC:
             large_text=f"{self.data.get("year")}",
             details= f"{self.data.get("name", "Unknown media")}",
             state=f"{self.data.get("album_artist", None)}",
-            large_image="server",
+            large_image=self.image,
             start=self.time_passed()[0],
             end=self.time_passed()[1],
         )        
