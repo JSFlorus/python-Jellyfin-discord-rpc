@@ -1,5 +1,9 @@
 # Jellyfin Discord RPC
-![CI/CD](https://github.com/jsflorus/python-jellyfin-discord-rpc/actions/workflows/ci-cd.yml/badge.svg)
+
+[![CI/CD](https://github.com/jsflorus/python-jellyfin-discord-rpc/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/jsflorus/python-jellyfin-discord-rpc/actions)
+
+---
+
 Displays your Jellyfin playback status on Discord Rich Presence.
 
 ---
