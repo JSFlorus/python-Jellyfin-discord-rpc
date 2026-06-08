@@ -5,7 +5,6 @@ def setup_env(monkeypatch):
     monkeypatch.setenv("JELLYFIN_URL", "http://fake")
     monkeypatch.setenv("JELLYFIN_API_KEY", "fakekey")
     monkeypatch.setenv("DISCORD_CLIENT_ID", "123")
-    monkeypatch.setenv("ART_ASSET", "server")
     monkeypatch.setenv("DISCORD_UPDATE_INTERVAL_SECS", "10")
     monkeypatch.setenv("JELLYFIN_USER", "test_user")
 

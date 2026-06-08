@@ -1,5 +1,6 @@
 from config import JellyfinSettings
 import requests
+#import json
 
 
      
@@ -45,6 +46,8 @@ class JellyfinApi:
     def init_json(self) -> None:
         self.__raw_json = self.get_session_json()
 
+        # with open("session_dump.json", "w") as f:
+        #     json.dump(self.__raw_json, f, indent=4)
 
     def parse_session_json(self) -> dict[str,str]:   
         if not self.__raw_json:
@@ -76,8 +79,8 @@ class JellyfinApi:
         if now_playing.get("Type") == "Audio":
             data.update({
                 "album": now_playing.get("Album"),
-                "album_id": session.get("PlayState", {}).get("MediaSourceId"),
-                "image_tag": now_playing.get("AlbumPrimaryImageTag"),
+                "album_id": now_playing.get("Id"),
+                "image_tag": now_playing.get("ImageTags", {}).get("Primary"),
                 "album_artist": now_playing.get("AlbumArtist"),
             })
             data.update({
@@ -86,7 +89,7 @@ class JellyfinApi:
         elif now_playing.get("Type") == "Movie":
             data.update({
                 "movie_id": session.get("PlayState", {}).get("MediaSourceId"),
-                "image_tag": now_playing.get("ImageTags")
+                "image_tag": now_playing.get("ImageTags", {}).get("Primary")
             })
             data.update({
                 "image_url":  f"{self.__url}/Items/{data["movie_id"]}/Images/Primary?tag={data['image_tag']}"
@@ -97,7 +100,8 @@ class JellyfinApi:
                 "season_number": now_playing.get("ParentIndexNumber"),
                 "episode_number": now_playing.get("IndexNumber"),
                 "season_id": now_playing.get("SeasonId"),                
-                "season_name": now_playing.get("SeasonName")
+                "season_name": now_playing.get("SeasonName"),
+                "show_name": now_playing.get("SeriesName")
             })
             data.update({
                 "image_url":  f"{self.__url}/Items/{data["season_id"]}/Images/Primary?tag={data['image_tag']}"

@@ -13,7 +13,6 @@ def init_time():
 class JellyfinRPC:
     def __init__(self) -> None:
         self.settings = JellyfinSettings()  # type: ignore[reportCallIssue]
-        self.image = self.settings.image_asset
         self.rpc = Presence(self.settings.client_id)
         self.data = {}
         self.last_name = None
@@ -63,6 +62,7 @@ class JellyfinRPC:
         data = JellyfinApi()
         data.init_json()
         return data.parse_session_json()
+
     def audio_rpc(self) -> None:
         self.safe_rpc_update(
             activity_type=ActivityType.LISTENING,  
@@ -70,7 +70,7 @@ class JellyfinRPC:
             large_text=f"{self.data.get("year")}",
             state=f"{self.data.get("album_artist", None)}",
             details= f"{self.data.get("name", "Unknown media")}",
-            large_image=self.image,
+            large_image=self.data.get("image_url"),
             start=self.time_passed()[0],
             end=self.time_passed()[1],
         )
@@ -78,23 +78,27 @@ class JellyfinRPC:
         self.safe_rpc_update(
             activity_type=ActivityType.WATCHING,   
             status_display_type=StatusDisplayType.DETAILS,   
-            large_text=f"{self.data.get("year")}",
+            state=f"{self.data.get("year", "")}",
             details= f"{self.data.get("name", "Unknown media")}",
-            large_image=self.image,
+            large_image=self.data.get("image_url"),
             start=self.time_passed()[0],
             end=self.time_passed()[1],
         )
     def show_rpc(self) -> None:
         self.safe_rpc_update(
-            activity_type=ActivityType.WATCHING,  
-            status_display_type=StatusDisplayType.DETAILS,   
-            large_text=f"{self.data.get("year")}",
-            details= f"{self.data.get("name", "Unknown media")}",
-            state=f"{self.data.get("album_artist", None)}",
-            large_image=self.image,
+            activity_type=ActivityType.WATCHING,
+            status_display_type=StatusDisplayType.DETAILS,
+            details=self.data.get("show_name", "Unknown Show"),
+            state=(
+                f"S{self.data.get('season_number')}"
+                f"E{self.data.get('episode_number')} • "
+                f"{self.data.get('name')}"
+            ),
+            large_image=self.data.get("image_url"),
+            large_text=f"{self.data.get('year')}",            
             start=self.time_passed()[0],
             end=self.time_passed()[1],
-        )        
+        )
     def find_type(self) -> None:
         if self.data.get("type"):
             self.rpc_cleared = False
@@ -103,7 +107,7 @@ class JellyfinRPC:
             print("AUDIO")
         elif self.data.get("type") == "Movie":
             self.movie_rpc()        
-        elif self.data.get("type") == "Show":
+        elif self.data.get("type") == "Episode":
             self.show_rpc()             
         else:
             print("Type of Media Not Found")  
