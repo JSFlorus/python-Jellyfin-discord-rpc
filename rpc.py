@@ -4,8 +4,12 @@ from pypresence.presence import Presence
 from pypresence.types import ActivityType, StatusDisplayType
 from pypresence.exceptions import DiscordNotFound, InvalidPipe, PipeClosed, ResponseTimeout, ConnectionTimeout
 import time
+from collections import deque
+
+
 def init_time():
     return  int(time.time())
+
 class JellyfinRPC:
     def __init__(self) -> None:
         self.settings = JellyfinSettings()  # type: ignore[reportCallIssue]
@@ -15,7 +19,10 @@ class JellyfinRPC:
         self.last_name = None
         self.intiial_time = 0
         self.discord_connected = False
-        self.connect_rpc()        
+        self.connect_rpc()     
+        self.data_history = deque(maxlen=5)           
+        self.rpc_cleared = False        
+
     def connect_rpc(self) -> bool:
         try:
             self.rpc.connect()
@@ -38,10 +45,12 @@ class JellyfinRPC:
 
     def safe_rpc_clear(self) -> None:
         if not self.discord_connected:
-            return
-
+            return 
+        if self.rpc_cleared:
+            return 
         try:
             self.rpc.clear()
+            self.rpc_cleared = True        
         except (PipeClosed, InvalidPipe, ResponseTimeout, ConnectionTimeout, DiscordNotFound):
             self.discord_connected = False        
     def time_passed(self) -> tuple[int, int]:
@@ -87,6 +96,8 @@ class JellyfinRPC:
             end=self.time_passed()[1],
         )        
     def find_type(self) -> None:
+        if self.data.get("type"):
+            self.rpc_cleared = False
         if self.data.get("type") == "Audio":
             self.audio_rpc()
             print("AUDIO")
@@ -97,14 +108,26 @@ class JellyfinRPC:
         else:
             print("Type of Media Not Found")  
   
+    def data_is_stale(self) -> bool:
+        if len(self.data_history) < 5:
+            return False
+
+        return all(item == self.data_history[0] for item in self.data_history)
 
     def update_presence(self) -> str | None:
         self.data = self.refresh_data()
+        self.data_history.append(self.data)
+
         if "error" in self.data:
             self.safe_rpc_clear()
             print(f"Error: {self.data.get("error")}")
             return None
  
+        if self.data_is_stale():
+            self.safe_rpc_clear()
+            print("Session data unchanged for 5 checks, RPC cleared")
+            return None
+        
         print(f"Media: {self.data}")
         self.intiial_time = init_time()
         self.find_type()

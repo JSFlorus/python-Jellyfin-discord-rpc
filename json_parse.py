@@ -2,29 +2,7 @@ from config import JellyfinSettings
 import requests
 
 
-def get_duration(ticks):
-    time_seconds = int(ticks / 10_000_000)
-    if time_seconds < 60:
-        seconds = time_seconds
-        return {
-            "seconds" : seconds
-        }
-    elif time_seconds > 60 and time_seconds < 60*60:
-        minutes = time_seconds // 60
-        seconds = time_seconds % 60
-        return {
-            "seconds" : seconds,
-            "minutes" : minutes
-        }        
-    else:
-        hours = time_seconds // 60**2
-        minutes = (time_seconds - hours*60**2) // 60
-        seconds = (time_seconds - hours*60**2) // 60
-        return {
-            "seconds" : seconds,
-            "minutes" : minutes,
-            "hours" : hours
-        }        
+     
 def get_duration_seconds(ticks):
     time_seconds = int(ticks / 10_000_000)
     return time_seconds
