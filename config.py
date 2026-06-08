@@ -12,13 +12,3 @@ class JellyfinSettings(BaseSettings):
     client_id: str = Field(alias="DISCORD_CLIENT_ID")
     image_asset: str = Field(alias="ART_ASSET")
     poll_rate: int = Field(alias="DISCORD_UPDATE_INTERVAL_SECS")
-
- 
-
-
- 
-# settings = JellyfinSettings() # type: ignore[reportCallIssue]
-# #print(settings.model_dump())
-
-
-# # real_key = settings.api_key.get_secret_value()

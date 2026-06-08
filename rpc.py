@@ -102,7 +102,7 @@ class JellyfinRPC:
         self.data = self.refresh_data()
         if "error" in self.data:
             self.safe_rpc_clear()
-            print(f"Jellyfin error: {self.data.get("error")}")
+            print(f"Error: {self.data.get("error")}")
             return None
  
         print(f"Media: {self.data}")

@@ -44,16 +44,33 @@ class JellyfinApi:
             "Authorization": f"MediaBrowser Token={self.__api_key}",
             "X-Emby-Token": f"MediaBrowser Token={self.__api_key}"
             }
-        request = requests.get(url, headers=headers)
-        #print(request.status_code)
-        return request.json()
+
+        try:
+            response = requests.get(url, headers=headers, timeout=5)
+            response.raise_for_status() 
+            return response.json()
+
+        except requests.exceptions.HTTPError as e:
+            print(f"HTTP error while accessing {url}: {e}")
+        except requests.exceptions.ConnectionError as e:
+            print(f"Could not connect to {url}: {e}")
+        except requests.exceptions.Timeout as e:
+            print(f"Request timed out: {e}")
+        except requests.exceptions.RequestException as e:
+            print(f"Request failed: {e}")
+        except ValueError as e:
+            print(f"Invalid JSON returned by server: {e}")
+
+        return []
+    
+
     def init_json(self) -> None:
         self.__raw_json = self.get_session_json()
 
 
     def parse_session_json(self) -> dict[str,str]:   
         if not self.__raw_json:
-            return {"error" : "Cannot connect to jellyfin server"}
+            return {"error" : "No Data Available"}
             
         session = {}
         now_playing = {}
