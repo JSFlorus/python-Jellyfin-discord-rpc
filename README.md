@@ -82,6 +82,9 @@ No Rich Presence assets are required. Artwork is pulled directly from Jellyfin.
 docker run -d \
   --name jellyfin-rpc \
   --restart unless-stopped \
+  --ipc host \
+  --network host \
+  --user 1000:1000 \
   -e DISCORD_CLIENT_ID=your_discord_client_id \
   -e JELLYFIN_URL=http://your-jellyfin \
   -e JELLYFIN_API_KEY=your_api_key \
