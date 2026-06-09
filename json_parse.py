@@ -1,6 +1,6 @@
 from config import JellyfinSettings
 import requests
-#import json
+# import json
 
 
      
@@ -77,15 +77,34 @@ class JellyfinApi:
         }   
         
         if now_playing.get("Type") == "Audio":
+            track_id = now_playing.get("Id")
+            track_tag = now_playing.get("ImageTags", {}).get("Primary")
+
+            album_id = now_playing.get("AlbumId")
+            album_tag = now_playing.get("AlbumPrimaryImageTag")
+
             data.update({
                 "album": now_playing.get("Album"),
-                "album_id": now_playing.get("Id"),
-                "image_tag": now_playing.get("ImageTags", {}).get("Primary"),
                 "album_artist": now_playing.get("AlbumArtist"),
             })
-            data.update({
-                "image_url":  f"{self.__url}/Items/{data["album_id"]}/Images/Primary?tag={data['image_tag']}"
-            })
+
+            # Prefer track artwork
+            if track_tag:
+                data.update({
+                    "image_tag": track_tag,
+                    "image_url": f"{self.__url}/Items/{track_id}/Images/Primary?tag={track_tag}",
+                })
+            # Fall back to album artwork
+            elif album_tag:
+                data.update({
+                    "image_tag": album_tag,
+                    "image_url": f"{self.__url}/Items/{album_id}/Images/Primary?tag={album_tag}",
+                })
+            else:
+                data.update({
+                    "image_tag": None,
+                    "image_url": None,
+                })
         elif now_playing.get("Type") == "Movie":
             data.update({
                 "movie_id": session.get("PlayState", {}).get("MediaSourceId"),
